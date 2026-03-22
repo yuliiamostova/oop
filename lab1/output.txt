@@ -1,0 +1,12 @@
+/Users/yuliiamostova/Documents/python/oop_python/.venv/bin/python /Users/yuliiamostova/PycharmProjects/PythonProject2/hw/01/1.3.1.py 
+Файл: input01.txt
+Найбільша площа: Circle(21.0) - 1385.4423602330987
+Найбільший периметр: Circle(21.0) - 131.94689145077132
+Файл: input02.txt
+Найбільша площа: Circle(25.0) - 1963.4954084936207
+Найбільший периметр: Circle(25.0) - 157.07963267948966
+Файл: input03.txt
+Найбільша площа: Circle(25.0) - 1963.4954084936207
+Найбільший периметр: Circle(25.0) - 157.07963267948966
+
+Process finished with exit code 0
