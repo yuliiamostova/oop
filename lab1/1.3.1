@@ -1,0 +1,160 @@
+import math
+
+
+class Triangle:
+    def __init__(self, a, b, c):
+        self.name = "Triangle"
+        self.a = float(a)
+        self.b = float(b)
+        self.c = float(c)
+
+        if self.a < 0 or self.b < 0 or self.c < 0:
+            raise ValueError("Сторони трикутника не можуть бути від'ємними")
+
+        if self.a + self.b <= self.c or self.a + self.c <= self.b or self.b + self.c <= self.a:
+            raise ValueError("Трикутник із такими сторонами не існує")
+
+    def perimeter(self):
+        return self.a + self.b + self.c
+
+    def area(self):
+        p = self.perimeter() / 2
+        return (p * (p - self.a) * (p - self.b) * (p - self.c)) ** 0.5
+
+
+class Rectangle:
+    def __init__(self, a, b):
+        self.name = "Rectangle"
+        self.a = float(a)
+        self.b = float(b)
+
+        if self.a < 0 or self.b < 0:
+            raise ValueError("Сторони прямокутника не можуть бути від'ємними")
+
+    def perimeter(self):
+        return 2 * (self.a + self.b)
+
+    def area(self):
+        return self.a * self.b
+
+
+class Trapeze:
+    def __init__(self, a, b, c, d):
+        self.name = "Trapeze"
+        self.a = float(a)
+        self.b = float(b)
+        self.c = float(c)
+        self.d = float(d)
+
+        if self.a < 0 or self.b < 0 or self.c < 0 or self.d < 0:
+            raise ValueError("Сторони трапеції не можуть бути від'ємними")
+
+    def perimeter(self):
+        return self.a + self.b + self.c + self.d
+
+    def area(self):
+        return (self.a + self.b) / 2 * ((self.c + self.d) / 2)
+
+
+class Parallelogram:
+    def __init__(self, a, b, h):
+        self.name = "Parallelogram"
+        self.a = float(a)
+        self.b = float(b)
+        self.h = float(h)
+
+        if self.a < 0 or self.b < 0 or self.h < 0:
+            raise ValueError("Параметри паралелограма не можуть бути від'ємними")
+
+    def perimeter(self):
+        return 2 * (self.a + self.b)
+
+    def area(self):
+        return self.a * self.h
+
+
+class Circle:
+    def __init__(self, r):
+        self.name = "Circle"
+        self.r = float(r)
+
+        if self.r < 0:
+            raise ValueError("Радіус не може бути від'ємним")
+
+    def perimeter(self):
+        return 2 * math.pi * self.r
+
+    def area(self):
+        return math.pi * self.r ** 2
+
+
+def read_file(filename):
+    shapes = []
+
+    with open(filename, "r", encoding="utf-8") as f:
+        for line in f:
+            data = line.split()
+            if not data:
+                continue
+            try:
+                if data[0] == "Triangle":
+                    shapes.append(Triangle(data[1], data[2], data[3]))
+
+                elif data[0] == "Rectangle":
+                    shapes.append(Rectangle(data[1], data[2]))
+
+                elif data[0] == "Trapeze":
+                    shapes.append(Trapeze(data[1], data[2], data[3], data[4]))
+
+                elif data[0] == "Parallelogram":
+                    shapes.append(Parallelogram(data[1], data[2], data[3]))
+
+                elif data[0] == "Circle":
+                    shapes.append(Circle(data[1]))
+
+            except (ValueError, IndexError):
+                continue
+    return shapes
+
+
+def show_shape(shape):
+    if isinstance(shape, Triangle):
+        return f"Triangle({shape.a}, {shape.b}, {shape.c})"
+
+    elif isinstance(shape, Rectangle):
+        return f"Rectangle({shape.a}, {shape.b})"
+
+    elif isinstance(shape, Trapeze):
+        return f"Trapeze({shape.a}, {shape.b}, {shape.c}, {shape.d})"
+
+    elif isinstance(shape, Parallelogram):
+        return f"Parallelogram({shape.a}, {shape.b}, {shape.h})"
+
+    elif isinstance(shape, Circle):
+        return f"Circle({shape.r})"
+
+def process_file(file):
+    shapes = read_file(file)
+
+    if len(shapes) == 0:
+        print("У файлі", file, "немає правильних фігур")
+        print()
+        return
+
+    max_area = shapes[0]
+    max_per = shapes[0]
+
+    for shape in shapes:
+        if shape.area() > max_area.area():
+            max_area = shape
+        if shape.perimeter() > max_per.perimeter():
+            max_per = shape
+
+    print(f"Файл: {file}")
+    print(f"Найбільша площа: {show_shape(max_area)} - {max_area.area()}")
+    print(f"Найбільший периметр: {show_shape(max_per)} - {max_per.perimeter()}")
+
+
+process_file("input01.txt")
+process_file("input02.txt")
+process_file("input03.txt")
