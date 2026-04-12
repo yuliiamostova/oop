@@ -1,0 +1,159 @@
+import turtle as t
+import time
+import math
+
+class Watch:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
+    def update_time(self):
+        pass
+
+
+class Digit:
+    def __init__(self, number, x, y):
+        self.number = number
+        self.x = x
+        self.y = y
+        self.pen = t.Turtle()
+        self.pen.hideturtle()
+        self.pen.penup()
+        self.pen.speed(0)
+
+    def draw(self):
+        self.pen.goto(self.x, self.y)
+        self.pen.write(str(self.number), align="center", font=("Arial", 14, "normal"))
+
+
+
+class Dial:
+    def __init__(self, x, y, radius):
+        self.x = x
+        self.y = y
+        self.radius = radius
+        self.digits = []
+
+        self.pen = t.Turtle()
+        self.pen.hideturtle()
+        self.pen.speed(0)
+        self.pen.pensize(3)
+
+        for i in range(1, 13):
+            angle = math.radians(90 - i * 30)
+            digit_x = self.x + (self.radius - 25) * math.cos(angle)
+            digit_y = self.y + (self.radius - 25) * math.sin(angle)
+            self.digits.append(Digit(i, digit_x, digit_y))
+
+    def draw(self):
+        self.pen.penup()
+        self.pen.goto(self.x, self.y - self.radius)
+        self.pen.pendown()
+        self.pen.circle(self.radius)
+
+        for digit in self.digits:
+            digit.draw()
+
+        self.pen.penup()
+        self.pen.goto(self.x, self.y)
+        self.pen.dot(8, "black")
+
+
+class Arrow:
+    def __init__(self, length, color, width):
+        self.length = length
+        self.color = color
+        self.width = width
+        self.pen = t.Turtle()
+        self.pen.hideturtle()
+        self.pen.speed(0)
+        self.pen.color(self.color)
+        self.pen.pensize(self.width)
+
+    def draw(self, x, y, angle):
+        self.pen.clear()
+        self.pen.penup()
+        self.pen.goto(x, y)
+        self.pen.setheading(angle)
+        self.pen.pendown()
+        self.pen.forward(self.length)
+
+
+class AnalogWatch(Watch):
+    def __init__(self, x, y, radius):
+        super().__init__(x, y)
+        self.radius = radius
+        self.dial = Dial(x, y, radius)
+        self.hour_arrow = Arrow(radius * 0.5, "black", 5)
+        self.minute_arrow = Arrow(radius * 0.75, "blue", 3)
+        self.second_arrow = Arrow(radius * 0.9, "red", 1)
+
+    def draw(self):
+        self.dial.draw()
+
+    def update_time(self):
+        now = time.localtime()
+        seconds = now.tm_sec
+        minutes = now.tm_min + seconds / 60
+        hours = (now.tm_hour % 12) + minutes / 60
+        hour_angle = 90 - hours * 30
+        minute_angle = 90 - minutes * 6
+        second_angle = 90 - seconds * 6
+        self.hour_arrow.draw(self.x, self.y, hour_angle)
+        self.minute_arrow.draw(self.x, self.y, minute_angle)
+        self.second_arrow.draw(self.x, self.y, second_angle)
+
+
+class DigitalWatch(Watch):
+    def __init__(self, x, y, use_24_hour=True, title=""):
+        super().__init__(x, y)
+        self.use_24_hour = use_24_hour
+        self.title = title
+        self.pen = t.Turtle()
+        self.pen.hideturtle()
+        self.pen.penup()
+        self.pen.speed(0)
+
+    def get_time_string(self):
+        now = time.localtime()
+        hours = now.tm_hour
+        minutes = now.tm_min
+        seconds = now.tm_sec
+
+        if self.use_24_hour:
+            return f"{hours:02d}:{minutes:02d}:{seconds:02d}"
+        else:
+            period = "AM"
+            if hours >= 12:
+                period = "PM"
+            hours = hours % 12
+            if hours == 0:
+                hours = 12
+            return f"{hours:02d}:{minutes:02d}:{seconds:02d} {period}"
+
+    def update_time(self):
+        self.pen.clear()
+        self.pen.goto(self.x, self.y)
+
+        text = self.title + "\n" + self.get_time_string()
+        self.pen.write(text, align="center", font=("Arial", 18, "bold"))
+
+
+screen = t.Screen()
+
+screen.tracer(0)
+analog_watch = AnalogWatch(0, 120, 150)
+analog_watch.draw()
+digital_watch_24 = DigitalWatch(0, -150, True, "Цифровий годинник (24-годинний формат)")
+digital_watch_12 = DigitalWatch(0, -200, False, "Цифровий годинник (12-годинний формат)")
+t_seconds = 1
+
+
+def refresh():
+    analog_watch.update_time()
+    digital_watch_24.update_time()
+    digital_watch_12.update_time()
+    screen.update()
+    screen.ontimer(refresh, t_seconds * 1000)
+refresh()
+screen.mainloop()
