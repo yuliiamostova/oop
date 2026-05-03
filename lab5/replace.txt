@@ -1,0 +1,6 @@
+Sentence SentenceClass
+класу class
+слів words
+речення sentence
+оператор operator
+слово word
